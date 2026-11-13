@@ -285,7 +285,14 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     content_type = [*final_headers["content-type"]].last
 
     is_redirection = url != final_url
-    basename = filenames.last || parse_basename(final_url, search_query: !is_redirection)
+    cask_cache_domain = Homebrew::EnvConfig.cask_cache_domain&.chomp("/")
+    basename_url, search_query = if cask_cache_domain && url.start_with?("#{cask_cache_domain}/")
+      # Cache URLs and their redirects embed the original host, which `parse_basename` would pick as the name.
+      [url.delete_prefix("#{cask_cache_domain}/"), true]
+    else
+      [final_url, !is_redirection]
+    end
+    basename = filenames.last || parse_basename(basename_url, search_query:)
 
     @resolved_info_cache[url] = [final_url, basename, time.last, file_size, content_type, is_redirection]
   end
