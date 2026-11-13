@@ -164,6 +164,12 @@ module Homebrew::EnvConfig
     def cache; end
 
     sig { returns(T.nilable(::String)) }
+    def cask_cache_domain; end
+
+    sig { returns(T::Boolean) }
+    def cask_cache_domain_no_fallback?; end
+
+    sig { returns(T.nilable(::String)) }
     def cask_opts_binaries; end
 
     sig { returns(T.nilable(::String)) }
