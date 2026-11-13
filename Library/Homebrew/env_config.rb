@@ -240,6 +240,20 @@ module Homebrew
                       "Linux: `$XDG_CACHE_HOME/Homebrew` or `~/.cache/Homebrew`.",
         default:      HOMEBREW_DEFAULT_CACHE,
       },
+      HOMEBREW_CASK_CACHE_DOMAIN:                {
+        description: "Prefix cask download URLs with this value. " \
+                     "For example, `export HOMEBREW_CASK_CACHE_DOMAIN=http://localhost:8080` will cause a " \
+                     "cask with the URL `https://example.com/foo.dmg` to instead download from " \
+                     "`http://localhost:8080/https://example.com/foo.dmg`. " \
+                     "If that download fails, the original URL is tried. " \
+                     "Casks downloaded with Git are not affected.",
+      },
+      HOMEBREW_CASK_CACHE_DOMAIN_NO_FALLBACK:    {
+        description: "When `$HOMEBREW_CASK_CACHE_DOMAIN` and `$HOMEBREW_CASK_CACHE_DOMAIN_NO_FALLBACK` are both " \
+                     "set, if the request to `$HOMEBREW_CASK_CACHE_DOMAIN` fails then Homebrew will error " \
+                     "rather than trying the original URL.",
+        boolean:     :set,
+      },
       HOMEBREW_CASK_OPTS:                        {
         description: "Append these options to all `cask` commands. All `--*dir` options, " \
                      "`--language`, `--require-sha` and `--no-binaries` are supported. " \
