@@ -278,6 +278,18 @@ module Cask
       url
     end
 
+    sig { override.returns(T::Array[String]) }
+    def determine_url_mirrors
+      urls = super
+      cache_domain = Homebrew::EnvConfig.cask_cache_domain&.chomp("/")
+      return urls if cache_domain.nil? || !(download_strategy <= CurlDownloadStrategy)
+
+      urls.flat_map do |original_url|
+        cache_url = "#{cache_domain}/#{original_url}"
+        Homebrew::EnvConfig.cask_cache_domain_no_fallback? ? [cache_url] : [cache_url, original_url]
+      end
+    end
+
     sig { override.returns(Pathname) }
     def cache
       Cache.path
