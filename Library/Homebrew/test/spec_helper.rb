@@ -247,6 +247,7 @@ RSpec.configure do |config| # rubocop:disable Metrics/BlockLength
 
   config.before do
     ENV["HOMEBREW_SUDO_CHECKED"] = "1"
+    ENV["HOMEBREW_NO_ARIA2C"] = "1"
     allow(Homebrew).to receive(:messages).and_return(Messages.new)
     allow(Utils).to receive(:sleep)
     allow(DevelopmentTools).to receive_messages(needs_build_formulae?: false, needs_libc_formula?: false)

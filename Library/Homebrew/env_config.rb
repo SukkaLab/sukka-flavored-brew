@@ -74,6 +74,10 @@ module Homebrew
         replacement: "the default native CPU optimisation",
         odeprecated: true,
       },
+      HOMEBREW_ARIA2C_CONNECTIONS:               {
+        description: "Specify the number of parallel connections passed to `aria2c`(1) when downloading files.",
+        default:     4,
+      },
       HOMEBREW_ARTIFACT_DOMAIN:                  {
         description: "Prefix all download URLs, including those for bottles, with this value. " \
                      "For example, `export HOMEBREW_ARTIFACT_DOMAIN=http://localhost:8080` will cause a " \
@@ -548,6 +552,10 @@ module Homebrew
         description: "If set, do not send analytics. Google Analytics were destroyed. " \
                      "For more information, see: <https://docs.brew.sh/Analytics>",
         boolean:     :set,
+      },
+      HOMEBREW_NO_ARIA2C:                        {
+        description: "If set, do not use `aria2c`(1) for multi-connection file downloads even when installed.",
+        boolean:     true,
       },
       HOMEBREW_NO_ASK:                           {
         description: "If set, do not enable default ask mode. This does not disable an explicit `--ask`.",
