@@ -135,6 +135,10 @@ module Homebrew
                      "unsupported.",
         boolean:     :set,
       },
+      HOMEBREW_AXEL_CONNECTIONS:                 {
+        description: "Specify the number of parallel connections passed to `axel`(1) when downloading files.",
+        default:     4,
+      },
       HOMEBREW_BAT:                              {
         description: "If set, use `bat` for the `brew cat` command. " \
                      "Set `$BAT_CONFIG_PATH` to use a custom configuration file and `$BAT_THEME` to select a theme.",
@@ -563,6 +567,10 @@ module Homebrew
                      "default. Note that setting this and e.g. tapping new taps may result in a broken  " \
                      "configuration. Please ensure you always run `brew update` before reporting any issues.",
         boolean:     :set,
+      },
+      HOMEBREW_NO_AXEL:                          {
+        description: "If set, do not use `axel`(1) for multi-connection file downloads even when installed.",
+        boolean:     true,
       },
       HOMEBREW_NO_BOOTSNAP:                      {
         description: "If set, do not use Bootsnap to speed up repeated `brew` calls.",

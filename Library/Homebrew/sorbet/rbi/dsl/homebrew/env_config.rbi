@@ -40,6 +40,9 @@ module Homebrew::EnvConfig
     sig { returns(T::Boolean) }
     def avoid_nested_sandboxing?; end
 
+    sig { returns(String) }
+    def axel_connections; end
+
     sig { returns(T::Boolean) }
     def bat?; end
 
@@ -348,6 +351,9 @@ module Homebrew::EnvConfig
 
     sig { returns(T::Boolean) }
     def no_autoremove?; end
+
+    sig { returns(T::Boolean) }
+    def no_axel?; end
 
     sig { returns(T::Boolean) }
     def no_bootsnap?; end

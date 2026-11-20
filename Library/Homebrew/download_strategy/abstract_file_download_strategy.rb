@@ -34,7 +34,9 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
 
     url_sha256 = Digest::SHA256.hexdigest(url)
     downloads = Pathname.glob(HOMEBREW_CACHE/"downloads/#{url_sha256}--*")
-                        .reject { |path| path.extname.end_with?(".incomplete") }
+                        .reject do |path|
+                          path.extname.end_with?(".incomplete") || path.to_s.end_with?(".incomplete.st")
+                        end
 
     @cached_location = if downloads.one?
       downloads.fetch(0)

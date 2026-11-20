@@ -49,7 +49,7 @@ module Homebrew
     class << self
       sig { params(pathname: Pathname).returns(T::Boolean) }
       def incomplete?(pathname)
-        pathname.extname.end_with?(".incomplete")
+        pathname.extname.end_with?(".incomplete") || pathname.to_s.end_with?(".incomplete.st")
       end
 
       sig { params(pathname: Pathname).returns(T::Boolean) }
@@ -728,8 +728,9 @@ module Homebrew
       (downloads - referenced_downloads).each do |download|
         if self.class.incomplete?(download)
           begin
-            DownloadLock.new(download).with_lock do
-              download.unlink
+            lock_target = download.to_s.end_with?(".incomplete.st") ? download.sub_ext("") : download
+            DownloadLock.new(lock_target).with_lock do
+              FileUtils.rm_f(download)
             end
           rescue OperationInProgressError
             # Skip incomplete downloads which are still in progress.
