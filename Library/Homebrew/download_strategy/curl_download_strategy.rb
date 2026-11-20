@@ -3,6 +3,7 @@
 
 require "timeout"
 require "utils/timer"
+require "utils/aria2c"
 
 # Strategy for downloading files using `curl`.
 #
@@ -25,6 +26,7 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     @file_size = T.let(nil, T.nilable(Integer))
     @last_modified = T.let(nil, T.nilable(Time))
     @fetch_end_time = T.let(nil, T.nilable(Time))
+    @using_aria2c = T.let(false, T::Boolean)
 
     # Merge `:header` with `:headers`.
     if (header = meta.delete(:header))
@@ -158,10 +160,19 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
     @file_size
   end
 
+  sig { override.returns(T.nilable(Integer)) }
+  def fetched_size
+    if @using_aria2c || Utils::Aria2c.control_file(temporary_path).exist?
+      return Utils::Aria2c.fetched_size(temporary_path, total_size: @file_size) || super
+    end
+
+    super
+  end
+
   sig { override.void }
   def clear_cache
     super
-    rm_rf(temporary_path)
+    rm_rf([temporary_path, Utils::Aria2c.control_file(temporary_path)])
   end
 
   sig { params(timeout: T.nilable(T.any(Float, Integer))).returns([T.nilable(Time), Integer]) }
@@ -316,7 +327,30 @@ class CurlDownloadStrategy < AbstractFileDownloadStrategy
       .returns(T.nilable(SystemCommand::Result))
   }
   def _curl_download(resolved_url, to, timeout)
-    curl_download resolved_url, to:, try_partial: @try_partial, timeout:
+    end_time = Time.now + timeout if timeout
+    downloaded = begin
+      @using_aria2c = true
+      Utils::Aria2c.download(
+        resolved_url,
+        to:,
+        timeout:,
+        expected_size:      @file_size,
+        allow_unknown_size: meta[:bottle] == true,
+        last_modified:      @last_modified,
+        headers:            meta.fetch(:headers, []),
+        cookies:            meta[:cookies],
+        referer:            meta[:referer],
+        user:               meta[:user],
+        user_agent:         _curl_user_agent,
+        quiet:              quiet?,
+        verbose:            Context.current.verbose?,
+      )
+    ensure
+      @using_aria2c = false
+    end
+    return if downloaded
+
+    curl_download resolved_url, to:, try_partial: @try_partial, timeout: Utils::Timer.remaining!(end_time)
   end
 
   sig { params(args: T::Array[String]).returns(T::Array[String]) }
