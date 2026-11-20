@@ -13,8 +13,8 @@ RSpec.describe Cask::Download do
     sig { returns(String) }
     let(:url_to_s) { "https://example.com/app.dmg" }
 
-    sig { returns(T::Hash[Symbol, String]) }
-    let(:url_specs) { {} }
+    sig { returns(T.nilable(String)) }
+    let(:url_branch) { nil }
 
     sig { returns(String) }
     let(:cache_url) { "https://cache.example/#{url_to_s}" }
@@ -22,10 +22,10 @@ RSpec.describe Cask::Download do
     sig { returns(Cask::Cask) }
     let(:cask) do
       cask_url = url_to_s
-      cask_url_specs = url_specs
+      cask_url_branch = url_branch
       Cask::Cask.new("example-cask") do
         version "1.2.3"
-        url cask_url, **cask_url_specs
+        url cask_url, branch: cask_url_branch
       end
     end
 
@@ -53,8 +53,8 @@ RSpec.describe Cask::Download do
         sig { returns(String) }
         let(:url_to_s) { "https://github.com/example/fonts.git" }
 
-        sig { returns(T::Hash[Symbol, String]) }
-        let(:url_specs) { { branch: "main" } }
+        sig { returns(T.nilable(String)) }
+        let(:url_branch) { "main" }
         # rubocop:enable RSpec/ScatteredLet
 
         it "downloads from the original URL" do
