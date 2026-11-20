@@ -22,6 +22,9 @@ module Homebrew::EnvConfig
     sig { returns(String) }
     def arch; end
 
+    sig { returns(String) }
+    def aria2c_connections; end
+
     sig { returns(T.nilable(::String)) }
     def artifact_domain; end
 
@@ -339,6 +342,9 @@ module Homebrew::EnvConfig
 
     sig { returns(T::Boolean) }
     def no_analytics?; end
+
+    sig { returns(T::Boolean) }
+    def no_aria2c?; end
 
     sig { returns(T::Boolean) }
     def no_ask?; end
