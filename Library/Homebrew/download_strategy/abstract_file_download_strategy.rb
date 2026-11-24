@@ -65,6 +65,9 @@ class AbstractFileDownloadStrategy < AbstractDownloadStrategy
 
   sig { params(url: String, search_query: T::Boolean).returns(String) }
   def parse_basename(url, search_query: true)
+    cask_cache_domain = Homebrew::EnvConfig.cask_cache_domain.presence&.chomp("/")
+    url = url.delete_prefix("#{cask_cache_domain}/") if cask_cache_domain && url.start_with?("#{cask_cache_domain}/")
+
     components = { path: T.let([], T::Array[String]), query: T.let([], T::Array[String]) }
 
     file_url = T.let(false, T::Boolean)
