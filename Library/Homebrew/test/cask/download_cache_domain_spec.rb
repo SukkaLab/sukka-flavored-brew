@@ -81,6 +81,28 @@ RSpec.describe Cask::Download do
         end
       end
 
+      context "when curl_headers fails on a cached extensionless URL" do
+        sig { returns(String) }
+        let(:url_to_s) { "https://downloads.example.com/tool" }
+
+        it "still names the download after the original URL" do
+          strategy = downloader
+          raise "Expected a curl download for #{url_to_s}" unless strategy.is_a?(CurlDownloadStrategy)
+
+          allow(strategy).to receive(:curl_headers)
+            .and_raise(ErrorDuringExecution.new(["curl"], status: 22))
+
+          expect(strategy.basename.to_s).to eq("tool")
+        end
+
+        it "does not adopt the original host TLD as the symlink extension" do
+          strategy = downloader
+          raise "Expected a curl download for #{url_to_s}" unless strategy.is_a?(CurlDownloadStrategy)
+
+          expect(strategy.symlink_location.basename.to_s).to eq("example-cask--1.2.3")
+        end
+      end
+
       context "with `$HOMEBREW_CASK_CACHE_DOMAIN_NO_FALLBACK` set" do
         before { ENV["HOMEBREW_CASK_CACHE_DOMAIN_NO_FALLBACK"] = "1" }
 
